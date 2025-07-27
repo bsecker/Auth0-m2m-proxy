@@ -3,6 +3,7 @@ from typing import Optional
 
 import jwt
 import requests
+import uvicorn
 from fastapi import FastAPI, Header, HTTPException, Request
 
 from auth0 import Auth0ManagementClient
@@ -37,15 +38,17 @@ def validate_token(token: str):
     try:
         public_key = get_public_key(token)
         decoded = jwt.decode(
-            token, public_key, algorithms=["RS256"], audience=auth0_conf["audience"]
+            token, public_key, algorithms=["RS256"], audience=auth0_conf["api_audience"]
         )
         return decoded
     except Exception as e:
+        print("Error:", e)
         raise HTTPException(status_code=401, detail="Invalid token.")
 
 
 @app.get("/users")
 def get_users(authorization: Optional[str] = Header(None)):
+    print("Authorization:", authorization)
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing Authorization")
 
@@ -53,9 +56,13 @@ def get_users(authorization: Optional[str] = Header(None)):
     claims = validate_token(token)
 
     client_id = claims["azp"]
-    if client_id not in clients:
+    if client_id not in clients.keys():
         raise HTTPException(status_code=403, detail="Unauthorized client")
 
     org_id = clients[client_id]
     users = auth0_client.get_users_by_org(org_id)
     return users
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8080)

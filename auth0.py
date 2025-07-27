@@ -1,3 +1,4 @@
+import base64
 import time
 from typing import Dict
 
@@ -5,11 +6,14 @@ import requests
 
 
 class Auth0ManagementClient:
-    def __init__(self, domain, client_id, client_secret, audience):
+    def __init__(
+        self, domain, client_id, client_secret, api_audience, management_audience
+    ):
         self.domain = domain
         self.client_id = client_id
         self.client_secret = client_secret
-        self.audience = audience
+        self.api_audience = api_audience
+        self.management_audience = management_audience
         self.token = None
         self.token_expiry = 0
 
@@ -19,8 +23,8 @@ class Auth0ManagementClient:
             json={
                 "grant_type": "client_credentials",
                 "client_id": self.client_id,
-                "client_secret": self.client_secret,
-                "audience": self.audience,
+                "client_secret": base64.b64decode(self.client_secret).decode("utf-8"),
+                "audience": self.management_audience,
             },
         )
         data = response.json()
@@ -35,6 +39,6 @@ class Auth0ManagementClient:
     def get_users_by_org(self, org_id):
         token = self.get_token()
         headers = {"Authorization": f"Bearer {token}"}
-        url = f"https://{self.domain}/api/v2/organizations/{org_id}/users"
+        url = f"https://{self.domain}/api/v2/organizations/{org_id}/members"
         response = requests.get(url, headers=headers)
         return response.json()

@@ -7,6 +7,7 @@
         "domain": "your-tenant.auth0.com",
         "client_id": "MGMT_CLIENT_ID",
         "client_secret": "MGMT_CLIENT_SECRET",
-        "audience": "https://your-tenant.auth0.com/api/v2/"
+        "api_audience": "https://your-tenant.auth0.com/api/v2/",
+        "management_audience": "https://your-tenant.auth0.com/api/v2/"
     }
 }

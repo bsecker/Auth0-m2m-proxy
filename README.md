@@ -1,5 +1,7 @@
 # Auth0 M2M Proxy
 
+**PROOF OF CONCEPT**: not for production use. 
+
 A lightweight, secure proxy service that restricts Auth0 Machine-to-Machine (M2M) clients to access only the users within their associated Auth0 **Organization**, using the Auth0 Management API.
 
 This resolves the issue of tenant-wide M2M tokens by enforcing per-organization access control at the proxy level.
@@ -12,9 +14,14 @@ This resolves the issue of tenant-wide M2M tokens by enforcing per-organization 
 - Enforces per-client organization access
 - Forwards allowed requests to Auth0 Management API
 - Blocks cross-org user access
-- Dockerized and easy to deploy
+- Dockerized with uv
 
 ---
+
+## Still To Do
+
+- [ ] Logging
+- [ ] Add unit tests for token validation (e2e tests really)
 
 ## Architecture
 
@@ -43,7 +50,8 @@ Create a `config.json` file at the root of the project:
     "domain": "your-tenant.auth0.com",
     "mgmt_client_id": "MGMT_CLIENT_ID",
     "mgmt_client_secret": "MGMT_CLIENT_SECRET",
-    "audience": "https://your-tenant.auth0.com/api/v2/"
+    "management_audience": "https://your-tenant.auth0.com/api/v2/",
+    "api_audience": "whatever (best to make it the url of this API when deployed)"
   }
 }
 ````
@@ -74,6 +82,21 @@ docker run -p 8000:8000 -v $(pwd)/config.json:/app/config.json auth0-proxy
 ---
 
 ## API Usage
+
+prereq: get the token for auth0. Will look something like this:
+
+```
+curl --request POST \
+  --url https://ethonai-prod.eu.auth0.com/oauth/token \
+  --header 'content-type: application/json' \
+  --data '{
+    "client_id":"ID of m2m client",
+    "client_secret":"secret of the m2m client",
+    "audience":"audience of the api server",
+    "grant_type":"client_credentials"
+    "organization": "org you set up in auth0"
+  }'
+```
 
 ### `GET /users`
 
