@@ -1,0 +1,12 @@
+{
+    "clients": {
+        "CLIENT_ID_1": "org_abc123",
+        "CLIENT_ID_2": "org_xyz456"
+    },
+    "auth0": {
+        "domain": "your-tenant.auth0.com",
+        "client_id": "MGMT_CLIENT_ID",
+        "client_secret": "MGMT_CLIENT_SECRET",
+        "audience": "https://your-tenant.auth0.com/api/v2/"
+    }
+}
