@@ -1,10 +1,10 @@
 # Auth0 M2M Proxy
 
-**PROOF OF CONCEPT**: not for production use. 
+**PROOF OF CONCEPT**: It's simple, but might need some more work to be production-grade. 
 
-A lightweight, secure proxy service that restricts Auth0 Machine-to-Machine (M2M) clients to access only the users within their associated Auth0 **Organization**, using the Auth0 Management API.
+Basically the issue is that when you create an Machine to Machine (M2M) token for the management API, it's always scoped to the entire tenant. There's no way to reduce it's scope to just a certain organisation (confirmed with auth0 support). If you, for example, have an edge-deployed server (or deployed on someone else's premesis) and you need to sync your users DB with Auth0, the management token you need has access to read _all_ the users, instead of just the ones that belong to the organisation your backend should use.
 
-This resolves the issue of tenant-wide M2M tokens by enforcing per-organization access control at the proxy level.
+This resolves the issue by creating a lightweight, secure proxy service that restricts m2m clients to access only the users within their associated Auth0 **Organization**, using the Auth0 Management API. You deploy the proxy in a place where you control, and then point your edge deployments to the proxy instead of going directly to Auth0.
 
 ---
 
@@ -22,6 +22,7 @@ This resolves the issue of tenant-wide M2M tokens by enforcing per-organization 
 
 - [ ] Logging
 - [ ] Add unit tests for token validation (e2e tests really)
+- [ ] Make more transparent instead of proxying just /users. Could just be an invisible proxy
 
 ## Architecture
 
